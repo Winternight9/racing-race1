@@ -40,7 +40,7 @@ class MyGame(arcade.Window):
         self.car_sprite.draw()
 
     def on_key_press(self, key, key_modifiers):
-         self.world.on_key_press(key, key_modifiers)
+        self.world.on_key_press(key, key_modifiers)
 
     def on_key_release(self, key, key_modifiers):
         self.world.on_key_release(key, key_modifiers)    
