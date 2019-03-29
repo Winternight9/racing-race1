@@ -1,6 +1,6 @@
 import arcade
-
-MOVEMENT_SPEED = 5
+from random import randint
+MOVEMENT_SPEED = 4
 DIR_STILL = 0
 DIR_UP = 1
 DIR_RIGHT = 2
@@ -57,13 +57,25 @@ class Car():
             return False   
     
             
-        
+class Enemy:
+    def __init__(self, world, x, y):
+        self.world = world
+        self.x = x
+        self.y = y
+        self.direction = DIR_DOWN
+    def move(self, direction):
+        self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
+
+    def update(self, delta):
+        self.move(self.direction)           
+
 class World:
     def __init__(self, width, height):
         self.width = width
         self.height = height
 
-        self.car = Car(self, 400, 50)                     
+        self.car = Car(self, 400, 50)
+        self.enemycar = Enemy(self,randint(250,550),600)    
         self.press = []
     def on_key_press(self, key, key_modifiers): 
         if key in KEY_MAP:
@@ -82,10 +94,11 @@ class World:
                     self.car.next_direction = DIR_LEFT
 
     def update(self, delta):
-        self.car.update(delta)    
+        self.car.update(delta)
+        self.enemycar.update(delta)    
 
     def checkdirection(self):
         if self.car.direction in self.press:
             return False
         else:
-            return True        
+            return True
