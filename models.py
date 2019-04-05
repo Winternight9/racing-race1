@@ -63,11 +63,13 @@ class Enemy:
         self.x = x
         self.y = y
         self.direction = DIR_DOWN
+        self.enemylist = []
     def move(self, direction):
         self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
 
     def update(self, delta):
-        self.move(self.direction)           
+        self.move(self.direction)
+
 
 class World:
     def __init__(self, width, height):
@@ -75,8 +77,8 @@ class World:
         self.height = height
 
         self.car = Car(self, 400, 50)
-        self.enemycar = Enemy(self,randint(250,550),600)    
-        self.press = []
+        self.enemylist = []
+        self.press = []    
     def on_key_press(self, key, key_modifiers): 
         if key in KEY_MAP:
             self.car.next_direction = KEY_MAP[key]
@@ -95,10 +97,41 @@ class World:
 
     def update(self, delta):
         self.car.update(delta)
-        self.enemycar.update(delta)    
-
+        self.check_enemy_car()
+        self.crete_many_enemy()
+        for car in self.enemylist:  
+            car.update(delta)
+            
     def checkdirection(self):
         if self.car.direction in self.press:
             return False
         else:
             return True
+
+    def crete_enemy(self):
+        listx  = [250,300,350,400,450,500,550]
+        x = listx[randint(0,6)]
+        y = 800
+        self.enemylist.append(Enemy(self, x, y))
+
+
+    def check_enemy_car(self):
+        copylist = [_ for _ in self.enemylist]
+        for car in copylist:
+            if car.y < -30:
+                self.enemylist.remove(car) 
+
+    def crete_many_enemy(self):
+        if len(self.enemylist) < 5:
+            self.crete_enemy()
+
+        
+
+        
+                
+
+
+
+    
+
+   
