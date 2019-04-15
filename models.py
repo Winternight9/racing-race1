@@ -1,6 +1,8 @@
 import arcade
+from crashdetect import check_crash
 from random import randint
-MOVEMENT_SPEED = 4
+MOVEMENT_SPEED = 8
+BACKGROUND_SPEED = 4
 DIR_STILL = 0
 DIR_UP = 1
 DIR_RIGHT = 2
@@ -45,13 +47,13 @@ class Car():
         self.move(self.direction)
 
     def waysideright(self):
-        if self.x > (self.world.width-250):
+        if self.x > (self.world.width-270):
             return True
         else:
             return False   
 
     def waysideleft(self): 
-        if self.x < (self.world.width-550):
+        if self.x < (self.world.width-530):
             return True
         else:
             return False   
@@ -67,16 +69,25 @@ class Enemy:
     def move(self, direction):
         self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
 
+    def hit(self, player):
+        return check_crash(player.x,player.y,self.x,self.y)    
+
     def update(self, delta):
         self.move(self.direction)
 
 
 class World:
+    STATE_FROZEN = 1
+    STATE_STARTED = 2
+    STATE_DEAD = 3
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
-
-        self.car = Car(self, 400, 50)
+        self.state = World.STATE_FROZEN
+        self.car = Car(self, 400, 60)
+        self.background = Background(400,400)
+        self.background2 = Background(400,1200)
         self.enemylist = []
         self.press = []    
     def on_key_press(self, key, key_modifiers): 
@@ -96,11 +107,18 @@ class World:
                     self.car.next_direction = DIR_LEFT
 
     def update(self, delta):
+        if self.state in [World.STATE_FROZEN, World.STATE_DEAD]:
+            return
+        self.background.update(delta)
+        self.background2.update(delta)
         self.car.update(delta)
+        self.reuse_bg()
         self.check_enemy_car()
         self.crete_many_enemy()
         for car in self.enemylist:  
             car.update(delta)
+            if car.hit(self.car):
+                self.die()
             
     def checkdirection(self):
         if self.car.direction in self.press:
@@ -109,8 +127,7 @@ class World:
             return True
 
     def crete_enemy(self):
-        listx  = [250,300,350,400,450,500,550]
-        x = listx[randint(0,6)]
+        x = randint(270,530)
         y = 800
         self.enemylist.append(Enemy(self, x, y))
 
@@ -122,10 +139,41 @@ class World:
                 self.enemylist.remove(car) 
 
     def crete_many_enemy(self):
-        if len(self.enemylist) < 5:
+        if len(self.enemylist) ==0:
             self.crete_enemy()
+        elif self.enemylist[-1].y <300:
+            self.crete_enemy()
+       
+    def reuse_bg(self):
+        if self.background.y == -400:
+            self.background.y = 1200
 
+
+        if self.background2.y == -400:
+            self.background2.y = 1200    
         
+    def start(self):
+        self.state = World.STATE_STARTED
+
+    def freeze(self):
+        self.state = World.STATE_FROZEN     
+
+    def is_started(self):
+        return self.state == World.STATE_STARTED
+
+    def die(self):
+        self.state = World.STATE_DEAD
+ 
+    def is_dead(self):
+        return self.state == World.STATE_DEAD    
+
+class Background:
+    def __init__(self,x,y):
+        self.x = x 
+        self.y = y
+    
+    def update(self,delta):
+        self.y = self.y - BACKGROUND_SPEED
 
         
                 

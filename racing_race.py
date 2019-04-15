@@ -2,7 +2,7 @@ import arcade
 from models import World, Car, Enemy
 
 SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_HEIGHT = 800
 SCREEN_TITLE = 'Racing_Race'
 
 class Fpscounter:
@@ -45,9 +45,12 @@ class MyGame(arcade.Window):
     def __init__(self, width, height):
         super().__init__(width, height)
 
-        self.background = arcade.load_texture("Background.png")
-        self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT) 
-        self.car_sprite = ModelSprite("Car_yellow.png",
+        self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.background_sprite = ModelSprite("Background.png",
+                                      model=self.world.background)
+        self.background_sprite2 = ModelSprite("Background.png",
+                                      model=self.world.background2)                              
+        self.car_sprite = ModelSprite("player_car.png",
                                       model=self.world.car)
         self.enemylist = []                              
         self.fpscounter = Fpscounter()
@@ -59,9 +62,11 @@ class MyGame(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
-                                      SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
+        
+        self.background_sprite.draw()
+        self.background_sprite2.draw()
         self.car_sprite.draw()
+
         self.fpscounter.tick()
         fps = f"fps{self.fpscounter.fps():.2f}"
         arcade.draw_text(fps,750,560,arcade.color.BLACK)
@@ -69,6 +74,8 @@ class MyGame(arcade.Window):
             enemy.draw()
     def on_key_press(self, key, key_modifiers):
         self.world.on_key_press(key, key_modifiers)
+        if not self.world.is_started():
+            self.world.start()
 
     def on_key_release(self, key, key_modifiers):
         self.world.on_key_release(key, key_modifiers)
