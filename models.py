@@ -89,7 +89,10 @@ class World:
         self.background = Background(400,400)
         self.background2 = Background(400,1200)
         self.enemylist = []
-        self.press = []    
+        self.press = []
+        self.score = 0
+        self.millisecond = 0    
+
     def on_key_press(self, key, key_modifiers): 
         if key in KEY_MAP:
             self.car.next_direction = KEY_MAP[key]
@@ -115,6 +118,7 @@ class World:
         self.reuse_bg()
         self.check_enemy_car()
         self.crete_many_enemy()
+        self.plusscore()
         for car in self.enemylist:  
             car.update(delta)
             if car.hit(self.car):
@@ -148,10 +152,16 @@ class World:
         if self.background.y == -400:
             self.background.y = 1200
 
-
         if self.background2.y == -400:
-            self.background2.y = 1200    
-        
+            self.background2.y = 1200  
+
+    def plusscore(self):
+        self.millisecond += 1
+        if self.millisecond == 60:
+            self.score += 1
+            self.millisecond = 0
+            print(self.score)              
+    
     def start(self):
         self.state = World.STATE_STARTED
 
@@ -159,7 +169,7 @@ class World:
         self.state = World.STATE_FROZEN     
 
     def is_started(self):
-        return self.state == World.STATE_STARTED
+        return self.state == World.STATE_STARTED 
 
     def die(self):
         self.state = World.STATE_DEAD

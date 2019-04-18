@@ -59,6 +59,7 @@ class MyGame(arcade.Window):
         self.creteenemy()
         self.update_enemylist()
         self.world.update(delta)
+        
 
     def on_draw(self):
         arcade.start_render()
@@ -66,15 +67,19 @@ class MyGame(arcade.Window):
         self.background_sprite.draw()
         self.background_sprite2.draw()
         self.car_sprite.draw()
-
         self.fpscounter.tick()
+        self.check_state()
+
         fps = f"fps{self.fpscounter.fps():.2f}"
+        score = f"Score {self.world.score}"
+        arcade.draw_text(score,710,770,arcade.color.YELLOW)
         arcade.draw_text(fps,750,560,arcade.color.BLACK)
         for enemy in self.enemylist:
             enemy.draw()
+            
     def on_key_press(self, key, key_modifiers):
         self.world.on_key_press(key, key_modifiers)
-        if not self.world.is_started():
+        if not self.world.is_dead():
             self.world.start()
 
     def on_key_release(self, key, key_modifiers):
@@ -93,9 +98,19 @@ class MyGame(arcade.Window):
             if enemy_sprite.model not in self.world.enemylist:
                 self.enemylist.remove(enemy_sprite)
 
+    def draw_game_over(self):
+        """
+        Draw "Game over" across the screen.
+        """
+        output = "Game Over"
+        arcade.draw_text(output, 240, 400, arcade.color.BLACK, 54)
 
+        output = "Click to restart"
+        arcade.draw_text(output, 310, 300, arcade.color.BLACK, 24)
 
-
+    def check_state(self):
+        if self.world.state == World.STATE_DEAD:
+            self.draw_game_over()        
 
 def main():
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT)
