@@ -151,7 +151,6 @@ class World:
     def reuse_bg(self):
         if self.background.y == -400:
             self.background.y = 1200
-
         if self.background2.y == -400:
             self.background2.y = 1200  
 
@@ -160,7 +159,7 @@ class World:
         if self.millisecond == 60:
             self.score += 1
             self.millisecond = 0
-            print(self.score)              
+                         
     
     def start(self):
         self.state = World.STATE_STARTED

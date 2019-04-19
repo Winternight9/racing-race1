@@ -50,7 +50,7 @@ class MyGame(arcade.Window):
                                       model=self.world.background)
         self.background_sprite2 = ModelSprite("Background.png",
                                       model=self.world.background2)                              
-        self.car_sprite = ModelSprite("player_car.png",
+        self.car_sprite = ModelSprite("redcar3.png",
                                       model=self.world.car)
         self.enemylist = []                              
         self.fpscounter = Fpscounter()
@@ -90,7 +90,7 @@ class MyGame(arcade.Window):
             if enemy in (enemy_sprite.model for enemy_sprite in self.enemylist):
                 pass
             else:
-                self.enemylist.append(ModelSprite("EnemyCar.png", 
+                self.enemylist.append(ModelSprite("EnemyCar2.png", 
                 model=enemy))
     
     def update_enemylist(self):
