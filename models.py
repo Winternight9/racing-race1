@@ -29,8 +29,8 @@ class Car():
         self.direction = DIR_STILL
         self.next_direction = DIR_STILL
 
-    def move(self, direction):
-        self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]  
+    def move(self, direction,speed):
+        self.x += (MOVEMENT_SPEED+speed) * DIR_OFFSETS[direction][0]  
 
     def update(self, delta): 
         if self.waysideright():
@@ -44,7 +44,7 @@ class Car():
         else:
             self.direction = self.next_direction        
 
-        self.move(self.direction)
+        self.move(self.direction,self.world.morespeed)
 
     def waysideright(self):
         if self.x > (self.world.width-270):
@@ -66,14 +66,14 @@ class Enemy:
         self.y = y
         self.direction = DIR_DOWN
         self.enemylist = []
-    def move(self, direction):
-        self.y += MOVEMENT_SPEED * DIR_OFFSETS[direction][1]
+    def move(self, direction,speed):
+        self.y += (MOVEMENT_SPEED+speed) * DIR_OFFSETS[direction][1]
 
     def hit(self, player):
         return check_crash(player.x,player.y,self.x,self.y)    
 
     def update(self, delta):
-        self.move(self.direction)
+        self.move(self.direction,self.world.morespeed)
 
 
 class World:
@@ -92,6 +92,8 @@ class World:
         self.press = []
         self.score = 0
         self.millisecond = 0    
+        self.morespeed = 0
+
 
     def on_key_press(self, key, key_modifiers): 
         if key in KEY_MAP:
@@ -112,8 +114,8 @@ class World:
     def update(self, delta):
         if self.state in [World.STATE_FROZEN, World.STATE_DEAD]:
             return
-        self.background.update(delta)
-        self.background2.update(delta)
+        self.background.update(self.morespeed,delta)
+        self.background2.update(self.morespeed,delta)
         self.car.update(delta)
         self.reuse_bg()
         self.check_enemy_car()
@@ -149,9 +151,9 @@ class World:
             self.crete_enemy()
        
     def reuse_bg(self):
-        if self.background.y == -400:
+        if self.background.y <= -400:
             self.background.y = 1200
-        if self.background2.y == -400:
+        if self.background2.y <= -400:
             self.background2.y = 1200  
 
     def plusscore(self):
@@ -159,6 +161,10 @@ class World:
         if self.millisecond == 60:
             self.score += 1
             self.millisecond = 0
+            self.plusspeed()
+
+    def plusspeed(self):
+        self.morespeed += 0.2       
                          
     
     def start(self):
@@ -181,8 +187,8 @@ class Background:
         self.x = x 
         self.y = y
     
-    def update(self,delta):
-        self.y = self.y - BACKGROUND_SPEED
+    def update(self,speed,delta):
+        self.y = self.y - (BACKGROUND_SPEED)
 
         
                 

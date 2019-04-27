@@ -1,5 +1,6 @@
 import arcade
 from models import World, Car, Enemy
+from random import randint
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
@@ -90,9 +91,14 @@ class MyGame(arcade.Window):
             if enemy in (enemy_sprite.model for enemy_sprite in self.enemylist):
                 pass
             else:
-                self.enemylist.append(ModelSprite("EnemyCar2.png", 
+                self.enemylist.append(ModelSprite(self.randomsprite(), 
                 model=enemy))
-    
+    def randomsprite(self):
+        namelist = ['EnemyCar2.png','Enemycarwhite.png']
+        randomnum = randint(0,1)
+        return namelist[randomnum]
+
+
     def update_enemylist(self):
         for enemy_sprite in [_ for _ in self.enemylist]:
             if enemy_sprite.model not in self.world.enemylist:
