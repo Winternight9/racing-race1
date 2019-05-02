@@ -22,9 +22,9 @@ choices = {
 
 Car = {0: 'images/redcar3.png',
         1: 'images/redcar.png',
-        2: 'imgaes/EnemyCar2.png',
+        2: 'images/Enemycar2.png',
         3: 'images/Enemycarwhite.png',
-        4: 'images/lambo.png',
+        4: 'images/lambo.png'
 }
 
 
@@ -79,13 +79,14 @@ class MenuChoiceSprite(arcade.AnimatedTimeSprite):
 class MyGame(arcade.Window):
     def __init__(self, width, height):
         super().__init__(width, height)
-
+ 
         self.current_route = routes['menu']
         self.selecting_choice = 0
-        self.car_choice = 0
+        self.car_choice = 2  
+        self.previous_choice = 0
 
         self.background = arcade.load_texture("images/Background.png")
-        self.cartexture = 'images/redcar3.png'
+        self.cartexture = Car[self.car_choice]
         self.menu_setup()
         self.car_setup()
         self.game_setup(width,height)
@@ -117,19 +118,10 @@ class MyGame(arcade.Window):
     def car_setup(self):
         self.car_choice_list = arcade.SpriteList()
 
-        self.car_show = MenuChoiceSprite()
-        self.car_show.textures.append(arcade.load_texture("images/redcar3.png"))
-        self.car_show.textures.append(arcade.load_texture("images/redcar.png"))
-        self.car_show.textures.append(arcade.load_texture("images/Enemycar2.png"))
-        self.car_show.textures.append(arcade.load_texture("images/Enemycarwhite.png"))
-        self.car_show.textures.append(arcade.load_texture("images/lambo.png"))
-        self.car_show.set_texture(self.car_choice)
+        self.car_show = arcade.Sprite(Car[self.car_choice])
+        self.car_show.set_position(self.width//2,self.height//2 +150)
 
-        self.car_show.center_x,self.car_show.center_y = self.width//2,self.height//2 +150
-        self.car_show.unselect()
         
-        self.car_choice_list.append(self.car_show)
-
 
     def game_setup(self, width, height):
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -141,21 +133,26 @@ class MyGame(arcade.Window):
                                       model=self.world.car)
         self.enemylist = []                              
         self.fpscounter = Fpscounter()
-        self.set_update_rate(1/70)
+        self.set_update_rate(1/80)
     
-    
+    def car_sprite_selected(self):
+        self.car_sprite = ModelSprite(self.cartexture,
+                                      model=self.world.car)
+        
     def update(self, delta):
         if self.current_route == routes['menu']:
             for choice in self.choice_list:
                 if choice.is_select == True:
                     choice.update()
                     choice.update_animation()
+            print(Car[self.car_choice])            
 
         elif self.current_route == routes['car']:
-            self.car_show.update()
-            self.car_show.update_animation()
+            self.draw_car_menu()
 
         elif self.current_route == routes['game']:
+            
+            print(Car[self.car_choice])        
             self.creteenemy()
             self.update_enemylist()
             self.world.update(delta)
@@ -169,9 +166,11 @@ class MyGame(arcade.Window):
             self.draw_menu()
 
         elif self.current_route == routes['car']:
+            self.car_setup()
             self.draw_car_menu()    
        
         elif self.current_route == routes['game']:
+            self.car_sprite_selected()
             self.background_sprite.draw()
             self.background_sprite2.draw()
             self.car_sprite.draw()
@@ -189,7 +188,7 @@ class MyGame(arcade.Window):
         self.choice_list.draw()
 
     def draw_car_menu(self):
-        self.car_choice_list.draw()
+        self.car_show.draw()
 
     def update_selected_choice(self):
         for choice in self.choice_list:
@@ -206,7 +205,7 @@ class MyGame(arcade.Window):
                     self.selecting_choice = 0
                 self.update_selected_choice()
             elif key == arcade.key.UP:
-                if self.selecting_choice > 0 :
+                if self.selecting_choice > 0 :  
                     self.selecting_choice -= 1
                 else:
                     self.selecting_choice = 2
@@ -216,9 +215,9 @@ class MyGame(arcade.Window):
 
         elif self.current_route == routes['car']:
             if key == arcade.key.RIGHT:
-                print('1')
                 if self.car_choice < 4:
                     self.car_choice += 1
+                    print(self.car_choice)
                 else:
                     self.car_choice = 0    
             
@@ -229,8 +228,8 @@ class MyGame(arcade.Window):
                     self.car_choice = 4
             elif key == arcade.key.ENTER:
                 self.cartexture = Car[self.car_choice]
-                self.menu_setup()
-
+                self.current_route = routes['menu']
+                
 
         elif self.current_route == routes['game']:
             self.world.on_key_press(key, key_modifiers)

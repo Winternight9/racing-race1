@@ -44,22 +44,22 @@ class Car():
         self.wayside()
 
     def wayside(self):
-        if self.x > (self.world.width-270):
-            if len(self.world.press) != 0 and self.world.press[-1] == DIR_RIGHT:
-                self.direction = DIR_STILL
-            elif len(self.world.press) != 0  and self.world.press[-1] == DIR_LEFT: 
-                self.next_direction = DIR_LEFT
-                self.direction = DIR_LEFT
+        # if self.x > (self.world.width-270):
+        #     if len(self.world.press) != 0 and self.world.press[-1] == DIR_RIGHT:
+        #         self.direction = DIR_STILL
+        #     elif len(self.world.press) != 0  and self.world.press[-1] == DIR_LEFT: 
+        #         self.next_direction = DIR_LEFT
+        #         self.direction = DIR_LEFT
 
-        elif self.x < (self.world.width-530):
-            if len(self.world.press) != 0 and self.world.press[-1] == DIR_LEFT:
-                self.direction = DIR_STILL
-            elif len(self.world.press) != 0  and self.world.press[-1] == DIR_RIGHT: 
-                self.next_direction = DIR_RIGHT
-                self.direction = DIR_RIGHT
+        # elif self.x < (self.world.width-530):
+        #     if len(self.world.press) != 0 and self.world.press[-1] == DIR_LEFT:
+        #         self.direction = DIR_STILL
+        #     elif len(self.world.press) != 0  and self.world.press[-1] == DIR_RIGHT: 
+        #         self.next_direction = DIR_RIGHT
+        #         self.direction = DIR_RIGHT
 
-        else:
-            self.direction = self.next_direction        
+        # else:
+        self.direction = self.next_direction        
 
         self.move(self.direction,self.world.morespeed)        
 
@@ -113,9 +113,9 @@ class World:
             if self.press == []:
                 self.car.next_direction = DIR_STILL
             elif self.checkdirection():
-                if self.car.direction == DIR_LEFT and not self.car.x < self.width -570:
+                if self.car.direction == DIR_LEFT:
                     self.car.next_direction = DIR_RIGHT
-                elif self.car.direction == DIR_RIGHT and not self.car.x > self.width - 230:
+                elif self.car.direction == DIR_RIGHT:
                     self.car.next_direction = DIR_LEFT
     
 
@@ -131,8 +131,8 @@ class World:
         self.plusscore()
         for car in self.enemylist:  
             car.update(delta)
-            if car.hit(self.car):
-                self.die()
+            # if car.hit(self.car):
+            #     self.die()
             
     def checkdirection(self):
         if self.car.direction in self.press:
