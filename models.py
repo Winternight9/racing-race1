@@ -41,6 +41,7 @@ class Car():
         self.x += (MOVEMENT_SPEED+speed) * DIR_OFFSETS[direction][0]  
 
     def update(self, delta): 
+        print(self.direction)
         self.wayside()
 
     def wayside(self):
@@ -56,12 +57,20 @@ class Car():
         #         self.direction = DIR_STILL
         #     elif len(self.world.press) != 0  and self.world.press[-1] == DIR_RIGHT: 
         #         self.next_direction = DIR_RIGHT
-        #         self.direction = DIR_RIGHT
-
-        # else:
-        self.direction = self.next_direction        
-
-        self.move(self.direction,self.world.morespeed)        
+        #             self.direction = DIR_RIGHT
+        #     else:
+        #                 
+        #     self.move(self.direction,self.world.morespeed)       
+        if self.world.width-530 < self.x < self.world.width-270:
+            self.direction = self.next_direction
+            self.move(self.direction,self.world.morespeed)
+        else:
+            self.direction = self.next_direction
+            if self.x > self.world.width//2 and self.direction == DIR_LEFT:
+                self.move(self.direction,self.world.morespeed)
+            elif self.x < self.world.width//2 and self.direction == DIR_RIGHT:
+                self.move(self.direction,self.world.morespeed)
+          
 
             
 class Enemy:
@@ -106,7 +115,6 @@ class World:
             self.press.append(KEY_MAP[key])
              
 
-
     def on_key_release(self, key, key_modifiers):
         if key in KEY_MAP:
             self.press.remove(KEY_MAP[key])
@@ -117,6 +125,12 @@ class World:
                     self.car.next_direction = DIR_RIGHT
                 elif self.car.direction == DIR_RIGHT:
                     self.car.next_direction = DIR_LEFT
+        # if key == arcade.key.LEFT:
+        #     self.next_direction = DIR_LEFT
+        # elif key == arcade.key.RIGHT:
+        #     self.next_direction = DIR_RIGHT
+        # else:
+        #     self.next_direction = DIR_STILL
     
 
     def update(self, delta):
