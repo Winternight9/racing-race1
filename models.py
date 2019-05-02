@@ -12,7 +12,8 @@ DIR_LEFT = 4
 KEY_MAP = { arcade.key.UP: DIR_UP,
             arcade.key.DOWN: DIR_DOWN,
             arcade.key.LEFT: DIR_LEFT,
-            arcade.key.RIGHT: DIR_RIGHT, }
+            arcade.key.RIGHT: DIR_RIGHT,
+            }
  
 DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_UP: (0,1),
@@ -20,7 +21,14 @@ DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_DOWN: (0,-1),
                 DIR_LEFT: (-1,0) }
 
+class Background:
+    def __init__(self,x,y):
+        self.x = x 
+        self.y = y
     
+    def update(self,speed,delta):
+        self.y = self.y - (BACKGROUND_SPEED)
+            
 class Car():
     def __init__(self, world, x, y):
         self.world = world
@@ -33,31 +41,28 @@ class Car():
         self.x += (MOVEMENT_SPEED+speed) * DIR_OFFSETS[direction][0]  
 
     def update(self, delta): 
-        if self.waysideright():
-            self.direction = DIR_STILL
-            if self.next_direction == DIR_LEFT:
+        self.wayside()
+
+    def wayside(self):
+        if self.x > (self.world.width-270):
+            if len(self.world.press) != 0 and self.world.press[-1] == DIR_RIGHT:
+                self.direction = DIR_STILL
+            elif len(self.world.press) != 0  and self.world.press[-1] == DIR_LEFT: 
+                self.next_direction = DIR_LEFT
                 self.direction = DIR_LEFT
-        elif self.waysideleft():
-            self.direction = DIR_STILL
-            if self.next_direction == DIR_RIGHT:
+
+        elif self.x < (self.world.width-530):
+            if len(self.world.press) != 0 and self.world.press[-1] == DIR_LEFT:
+                self.direction = DIR_STILL
+            elif len(self.world.press) != 0  and self.world.press[-1] == DIR_RIGHT: 
+                self.next_direction = DIR_RIGHT
                 self.direction = DIR_RIGHT
+
         else:
             self.direction = self.next_direction        
 
-        self.move(self.direction,self.world.morespeed)
+        self.move(self.direction,self.world.morespeed)        
 
-    def waysideright(self):
-        if self.x > (self.world.width-270):
-            return True
-        else:
-            return False   
-
-    def waysideleft(self): 
-        if self.x < (self.world.width-530):
-            return True
-        else:
-            return False   
-    
             
 class Enemy:
     def __init__(self, world, x, y):
@@ -98,7 +103,9 @@ class World:
     def on_key_press(self, key, key_modifiers): 
         if key in KEY_MAP:
             self.car.next_direction = KEY_MAP[key]
-            self.press.append(KEY_MAP[key])    
+            self.press.append(KEY_MAP[key])
+             
+
 
     def on_key_release(self, key, key_modifiers):
         if key in KEY_MAP:
@@ -106,10 +113,11 @@ class World:
             if self.press == []:
                 self.car.next_direction = DIR_STILL
             elif self.checkdirection():
-                if self.car.direction == DIR_LEFT:
+                if self.car.direction == DIR_LEFT and not self.car.x < self.width -570:
                     self.car.next_direction = DIR_RIGHT
-                else:
+                elif self.car.direction == DIR_RIGHT and not self.car.x > self.width - 230:
                     self.car.next_direction = DIR_LEFT
+    
 
     def update(self, delta):
         if self.state in [World.STATE_FROZEN, World.STATE_DEAD]:
@@ -182,15 +190,7 @@ class World:
     def is_dead(self):
         return self.state == World.STATE_DEAD    
 
-class Background:
-    def __init__(self,x,y):
-        self.x = x 
-        self.y = y
-    
-    def update(self,speed,delta):
-        self.y = self.y - (BACKGROUND_SPEED)
 
-        
                 
 
 
