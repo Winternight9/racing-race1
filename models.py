@@ -41,7 +41,6 @@ class Car():
         self.x += (MOVEMENT_SPEED+speed) * DIR_OFFSETS[direction][0]  
 
     def update(self, delta): 
-        print(self.direction)
         self.wayside()
 
     def wayside(self):
@@ -145,8 +144,8 @@ class World:
         self.plusscore()
         for car in self.enemylist:  
             car.update(delta)
-            # if car.hit(self.car):
-            #     self.die()
+            if car.hit(self.car):
+                self.die()
             
     def checkdirection(self):
         if self.car.direction in self.press:
