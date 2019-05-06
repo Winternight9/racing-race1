@@ -1,4 +1,5 @@
 import arcade
+from playsound import playsound
 from models import World, Car, Enemy
 from random import randint
 
@@ -91,6 +92,7 @@ class MyGame(arcade.Window):
 
     def menu_setup(self):
         self.choice_list = arcade.SpriteList()
+        # playsound('soundtrack\Comeandgetyour.mp3')  
 
         self.start = MenuChoiceSprite()
         self.start.textures.append(arcade.load_texture("images/start.png"))
@@ -163,7 +165,8 @@ class MyGame(arcade.Window):
         arcade.draw_texture_rectangle(self.width//2 , self.height//2 ,self.width, self.height,self.background)
 
         if self.current_route == routes['menu']:
-            self.draw_menu()
+            self.draw_menu()  
+            
 
         elif self.current_route == routes['car']:
             self.car_setup()
@@ -193,25 +196,22 @@ class MyGame(arcade.Window):
     def on_key_press(self, key, key_modifiers):
         if self.current_route == routes['menu']:
             if key == arcade.key.DOWN:
-                # press_file = arcade.load_sound('soundtrack\pressmusic.wav')
-                press = pyglet.media.load('soundtrack\pressmusic.wav')
-                press.play()
-                # arcade.play_sound(press_file)
                 if self.selecting_choice < 1:
                     self.selecting_choice += 1
+                   
                 else:
                     self.selecting_choice = 0
                 self.update_selected_choice()
+                # laser_sound = arcade.load_sound("soundtrack\pressmusic.wav")
+                # arcade.play_sound(laser_sound)
+                playsound('soundtrack\pressmusic.wav')
             elif key == arcade.key.UP:
-                # press_file = arcade.load_sound('soundtrack\pressmusic.wav')
-                # arcade.play_sound(press_file)
-                press = pyglet.media.load('soundtrack\pressmusic.wav')
-                press.play()
                 if self.selecting_choice > 0 :  
                     self.selecting_choice -= 1
                 else:
                     self.selecting_choice = 1
-                self.update_selected_choice()        
+                self.update_selected_choice()
+                playsound('soundtrack\pressmusic.wav')        
             elif key == arcade.key.ENTER:
                 self.current_route = routes[choices[self.selecting_choice]]
 
@@ -290,5 +290,4 @@ def main():
 if __name__ == "__main__":
     main()        
  
-# arcade.Sound("soundtrack\pressmusic").play()
 
