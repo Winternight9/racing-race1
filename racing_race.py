@@ -1,4 +1,5 @@
 import arcade
+import sys
 from playsound import playsound
 from models import World, Car, Enemy
 from random import randint
@@ -11,13 +12,13 @@ routes = {
     'menu':0,
     'game':1,
     'car':2,
-    'difficult':3,
+    'exit':3,
 }
 
 choices = {
     0: 'game',
     1: 'car',
-    2: 'difficult'
+    2: 'exit'
 }
 
 Car = {0: 'images/redcar3.png',
@@ -27,9 +28,7 @@ Car = {0: 'images/redcar3.png',
         4: 'images/Enemycar2.png',
         5: 'images/Enemycarwhite.png',
         6: 'images/lambo.png'
-        
 }
-
 
 class Fpscounter:
     def __init__(self):
@@ -108,17 +107,26 @@ class MyGame(arcade.Window):
         self.car.set_texture(1)
         self.car.texture_change_frames = 10
 
+        self.exit = MenuChoiceSprite()
+        self.exit.textures.append(arcade.load_texture("images/exit.png"))
+        self.exit.textures.append(arcade.load_texture("images/exit1.png"))
+        self.exit.set_texture(1)
+        self.exit.texture_change_frames = 10
+
+
         self.start.center_x,self.start.center_y = self.width//2,self.height//2 +50
         self.car.center_x,self.car.center_y = self.width//2,self.height//2 -20
+        self.exit.center_x,self.exit.center_y = self.width//2,self.height//2 -90
+        
         self.start.select()
-
         self.choice_list.append(self.start)
         self.choice_list.append(self.car)
+        self.choice_list.append(self.exit)
 
     def car_setup(self):
         self.car_choice_list = arcade.SpriteList()
         self.car_show = arcade.Sprite(Car[self.car_choice])
-        self.car_show.set_position(self.width//2,self.height//2 +150)
+        self.car_show.set_position(self.width//2,self.height//2 +50)
 
     def game_setup(self, width, height):
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -151,6 +159,9 @@ class MyGame(arcade.Window):
                    
         elif self.current_route == routes['car']:
             self.draw_car_menu()
+
+        elif self.current_route == routes['exit']:
+            sys.exit()    
 
         elif self.current_route == routes['game']:
                     
@@ -192,25 +203,24 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, key_modifiers):
         if self.current_route == routes['menu']:
-            # playsound('soundtrack/Comeandgetyour.mp3')  
             if key == arcade.key.DOWN:
-                if self.selecting_choice < 1:
+                if self.selecting_choice < 2:
                     self.selecting_choice += 1
-                   
                 else:
                     self.selecting_choice = 0
                 self.update_selected_choice()
-                laser_sound = arcade.load_sound("soundtrack/pressmusic.wav")
-                arcade.play_sound(laser_sound)
+                playsound("soundtrack/pressmusic.wav")
+                # press_sound = arcade.load_sound("soundtrack/pressmusic.wav")
+                # arcade.play_sound(press_sound)
                 
-                # playsound('soundtrack/pressmusic.wav')
             elif key == arcade.key.UP:
                 if self.selecting_choice > 0 :  
                     self.selecting_choice -= 1
                 else:
-                    self.selecting_choice = 1
+                    self.selecting_choice = 2
                 self.update_selected_choice()
-                playsound('soundtrack/pressmusic.wav')        
+                press_sound = arcade.load_sound("soundtrack/pressmusic.wav")
+                arcade.play_sound(press_sound)        
             elif key == arcade.key.ENTER:
                 self.current_route = routes[choices[self.selecting_choice]]
 
