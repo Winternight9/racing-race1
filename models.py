@@ -19,7 +19,9 @@ DIR_OFFSETS = { DIR_STILL: (0,0),
                 DIR_UP: (0,1),
                 DIR_RIGHT: (1,0),
                 DIR_DOWN: (0,-1),
-                DIR_LEFT: (-1,0) }
+                DIR_LEFT: (-1,0) 
+                }
+
 
 class Background:
     def __init__(self,x,y):
@@ -29,6 +31,7 @@ class Background:
     def update(self,speed,delta):
         self.y = self.y - (BACKGROUND_SPEED)
             
+
 class Car():
     def __init__(self, world, x, y):
         self.world = world
@@ -44,22 +47,6 @@ class Car():
         self.wayside()
 
     def wayside(self):
-        # if self.x > (self.world.width-270):
-        #     if len(self.world.press) != 0 and self.world.press[-1] == DIR_RIGHT:
-        #         self.direction = DIR_STILL
-        #     elif len(self.world.press) != 0  and self.world.press[-1] == DIR_LEFT: 
-        #         self.next_direction = DIR_LEFT
-        #         self.direction = DIR_LEFT
-
-        # elif self.x < (self.world.width-530):
-        #     if len(self.world.press) != 0 and self.world.press[-1] == DIR_LEFT:
-        #         self.direction = DIR_STILL
-        #     elif len(self.world.press) != 0  and self.world.press[-1] == DIR_RIGHT: 
-        #         self.next_direction = DIR_RIGHT
-        #             self.direction = DIR_RIGHT
-        #     else:
-        #                 
-        #     self.move(self.direction,self.world.morespeed)       
         if self.world.width-530 < self.x < self.world.width-270:
             self.direction = self.next_direction
             self.move(self.direction,self.world.morespeed)
@@ -71,7 +58,6 @@ class Car():
                 self.move(self.direction,self.world.morespeed)
           
 
-            
 class Enemy:
     def __init__(self, world, x, y):
         self.world = world
@@ -107,13 +93,11 @@ class World:
         self.millisecond = 0    
         self.morespeed = 0
 
-
     def on_key_press(self, key, key_modifiers): 
         if key in KEY_MAP:
             self.car.next_direction = KEY_MAP[key]
             self.press.append(KEY_MAP[key])
              
-
     def on_key_release(self, key, key_modifiers):
         if key in KEY_MAP:
             self.press.remove(KEY_MAP[key])
@@ -124,14 +108,7 @@ class World:
                     self.car.next_direction = DIR_RIGHT
                 elif self.car.direction == DIR_RIGHT:
                     self.car.next_direction = DIR_LEFT
-        # if key == arcade.key.LEFT:
-        #     self.next_direction = DIR_LEFT
-        # elif key == arcade.key.RIGHT:
-        #     self.next_direction = DIR_RIGHT
-        # else:
-        #     self.next_direction = DIR_STILL
     
-
     def update(self, delta):
         if self.state in [World.STATE_FROZEN, World.STATE_DEAD]:
             return
@@ -158,7 +135,6 @@ class World:
         y = 800
         self.enemylist.append(Enemy(self, x, y))
 
-
     def check_enemy_car(self):
         copylist = [_ for _ in self.enemylist]
         for car in copylist:
@@ -179,7 +155,7 @@ class World:
 
     def plusscore(self):
         self.millisecond += 1
-        if self.millisecond == 60:
+        if self.millisecond == 70:
             self.score += 1
             self.millisecond = 0
             self.plusspeed()
@@ -187,7 +163,6 @@ class World:
     def plusspeed(self):
         self.morespeed += 0.2       
                          
-    
     def start(self):
         self.state = World.STATE_STARTED
 

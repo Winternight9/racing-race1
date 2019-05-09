@@ -22,9 +22,12 @@ choices = {
 
 Car = {0: 'images/redcar3.png',
         1: 'images/redcar.png',
-        2: 'images/Enemycar2.png',
-        3: 'images/Enemycarwhite.png',
-        4: 'images/lambo.png'
+        2: 'images/pinkcar.png',
+        3: 'images/greencar.png',
+        4: 'images/Enemycar2.png',
+        5: 'images/Enemycarwhite.png',
+        6: 'images/lambo.png'
+        
 }
 
 
@@ -83,7 +86,7 @@ class MyGame(arcade.Window):
  
         self.current_route = routes['menu']
         self.selecting_choice = 0
-        self.car_choice = 2  
+        self.car_choice = 1
         self.background = arcade.load_texture("images/Background.png")
         self.cartexture = Car[self.car_choice]
         self.menu_setup()
@@ -92,7 +95,6 @@ class MyGame(arcade.Window):
 
     def menu_setup(self):
         self.choice_list = arcade.SpriteList()
-        # playsound('soundtrack\Comeandgetyour.mp3')  
 
         self.start = MenuChoiceSprite()
         self.start.textures.append(arcade.load_texture("images/start.png"))
@@ -115,11 +117,9 @@ class MyGame(arcade.Window):
 
     def car_setup(self):
         self.car_choice_list = arcade.SpriteList()
-
         self.car_show = arcade.Sprite(Car[self.car_choice])
         self.car_show.set_position(self.width//2,self.height//2 +150)
 
-        
     def game_setup(self, width, height):
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.background_sprite = ModelSprite("images/Background.png",
@@ -149,7 +149,6 @@ class MyGame(arcade.Window):
                     choice.update()
                     choice.update_animation()
                    
-
         elif self.current_route == routes['car']:
             self.draw_car_menu()
 
@@ -159,14 +158,12 @@ class MyGame(arcade.Window):
             self.update_enemylist()
             self.world.update(delta)
         
-
     def on_draw(self):
         arcade.start_render()
         arcade.draw_texture_rectangle(self.width//2 , self.height//2 ,self.width, self.height,self.background)
 
         if self.current_route == routes['menu']:
             self.draw_menu()  
-            
 
         elif self.current_route == routes['car']:
             self.car_setup()
@@ -182,7 +179,7 @@ class MyGame(arcade.Window):
 
             fps = f"fps{self.fpscounter.fps():.2f}"
             score = f"Score {self.world.score}"
-            arcade.draw_text(score,690,770,arcade.color.DARK_CANDY_APPLE_RED,24)
+            arcade.draw_text(score,670,770,arcade.color.DARK_CANDY_APPLE_RED,24)
             arcade.draw_text(fps,750,560,arcade.color.BLACK)
             for enemy in self.enemylist:
                 enemy.draw()
@@ -195,6 +192,7 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, key_modifiers):
         if self.current_route == routes['menu']:
+            # playsound('soundtrack/Comeandgetyour.mp3')  
             if key == arcade.key.DOWN:
                 if self.selecting_choice < 1:
                     self.selecting_choice += 1
@@ -202,24 +200,24 @@ class MyGame(arcade.Window):
                 else:
                     self.selecting_choice = 0
                 self.update_selected_choice()
-                # laser_sound = arcade.load_sound("soundtrack\pressmusic.wav")
-                # arcade.play_sound(laser_sound)
-                playsound('soundtrack\pressmusic.wav')
+                laser_sound = arcade.load_sound("soundtrack/pressmusic.wav")
+                arcade.play_sound(laser_sound)
+                
+                # playsound('soundtrack/pressmusic.wav')
             elif key == arcade.key.UP:
                 if self.selecting_choice > 0 :  
                     self.selecting_choice -= 1
                 else:
                     self.selecting_choice = 1
                 self.update_selected_choice()
-                playsound('soundtrack\pressmusic.wav')        
+                playsound('soundtrack/pressmusic.wav')        
             elif key == arcade.key.ENTER:
                 self.current_route = routes[choices[self.selecting_choice]]
 
         elif self.current_route == routes['car']:
             if key == arcade.key.RIGHT:
-                if self.car_choice < 4:
+                if self.car_choice < 6:
                     self.car_choice += 1
-                    print(self.car_choice)
                 else:
                     self.car_choice = 0    
             
@@ -232,14 +230,18 @@ class MyGame(arcade.Window):
                 self.cartexture = Car[self.car_choice]
                 self.current_route = routes['menu']
                 
-
         elif self.current_route == routes['game']:
             self.world.on_key_press(key, key_modifiers)
             if not self.world.is_dead():
                 self.world.start()       
-            if key == arcade.key.R and self.world.state == World.STATE_DEAD:
-                 self.game_setup(SCREEN_WIDTH,SCREEN_HEIGHT)
-           
+            elif key == arcade.key.R and self.world.state == World.STATE_DEAD:
+                self.game_setup(SCREEN_WIDTH,SCREEN_HEIGHT)
+
+            elif key == arcade.key.M and self.world.state == World.STATE_DEAD:
+                self.current_route = routes['menu']
+                self.draw_menu()
+                self.game_setup(SCREEN_WIDTH,SCREEN_HEIGHT)
+
     def on_key_release(self, key, key_modifiers):
         if self.current_route == routes['game']:
             self.world.on_key_release(key, key_modifiers)
@@ -253,10 +255,9 @@ class MyGame(arcade.Window):
                 model=enemy))
    
     def randomsprite(self):
-        namelist = ['images/EnemyCar2.png','images/Enemycarwhite.png']
-        randomnum = randint(0,1)
-        return namelist[randomnum]
-
+        enemyspritelist = ['images/EnemyCar2.png','images/Enemycarwhite.png','images/redcar.png','images/pinkcar.png']
+        randomnum = randint(0,3)
+        return enemyspritelist[randomnum]
 
     def update_enemylist(self):
         for enemy_sprite in [_ for _ in self.enemylist]:
@@ -264,17 +265,17 @@ class MyGame(arcade.Window):
                 self.enemylist.remove(enemy_sprite)
 
     def draw_game_over(self):
-        """
-        Draw "Game over" across the screen.
-        """
+        output = f"Score {self.world.score}"
+        arcade.draw_text(output, 285, 500, arcade.color.BALL_BLUE, 54)
+        
         output = "Game Over"
-        arcade.draw_text(output, 225, 400, arcade.color.BLACK, 54)
+        arcade.draw_text(output, 225, 400, arcade.color.BALL_BLUE, 54)
 
         output = "Press R to restart"
-        arcade.draw_text(output, 280, 300, arcade.color.BLACK, 24)
+        arcade.draw_text(output, 280, 300, arcade.color.BALL_BLUE, 24)
 
         output = "Press M to mainmenu"
-        arcade.draw_text(output,250,230,arcade.color.BLACK, 24)
+        arcade.draw_text(output,250,230,arcade.color.BALL_BLUE, 24)
 
     def check_state(self):
         if self.world.state == World.STATE_DEAD:
@@ -284,8 +285,6 @@ def main():
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT)
     arcade.set_window(window)
     arcade.run()
-
-
 
 if __name__ == "__main__":
     main()        
