@@ -54,7 +54,7 @@ class Fpscounter:
 class ModelSprite(arcade.Sprite):
     def __init__(self, *args, **kwargs):
         self.model = kwargs.pop('model', None)
- 
+
         super().__init__(*args, **kwargs)
  
     def sync_with_model(self):
@@ -113,7 +113,6 @@ class MyGame(arcade.Window):
         self.exit.set_texture(1)
         self.exit.texture_change_frames = 10
 
-
         self.start.center_x,self.start.center_y = self.width//2,self.height//2 +50
         self.car.center_x,self.car.center_y = self.width//2,self.height//2 -20
         self.exit.center_x,self.exit.center_y = self.width//2,self.height//2 -90
@@ -164,7 +163,6 @@ class MyGame(arcade.Window):
             sys.exit()    
 
         elif self.current_route == routes['game']:
-                    
             self.creteenemy()
             self.update_enemylist()
             self.world.update(delta)
@@ -209,9 +207,8 @@ class MyGame(arcade.Window):
                 else:
                     self.selecting_choice = 0
                 self.update_selected_choice()
-                playsound("soundtrack/pressmusic.wav")
-                # press_sound = arcade.load_sound("soundtrack/pressmusic.wav")
-                # arcade.play_sound(press_sound)
+                press_sound = arcade.load_sound("soundtrack/pressmusic.wav")
+                arcade.play_sound(press_sound)
                 
             elif key == arcade.key.UP:
                 if self.selecting_choice > 0 :  
